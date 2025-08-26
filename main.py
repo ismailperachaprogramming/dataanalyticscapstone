@@ -29,8 +29,7 @@ from sklearn.tree import plot_tree
 import pickle
 df0 = pd.read_csv("HR_capstone_dataset.csv")
 
-# Display first few rows of the dataframe
-### YOUR CODE HERE ### 
+# Displays first few rows of the dataframe
 df0.head()
 df0.info()
 df0.describe()
@@ -40,15 +39,14 @@ df0 = df0.rename(columns={'Work_accident': 'work_accident',
                           'time_spend_company': 'tenure',
                           'Department': 'department'})
 
-# Display all column names after the update
-### YOUR CODE HERE ### 
+# Displays all column names after the update
 df0.columns
 df0.isna().sum()
 df0.duplicated().sum()
 df0[df0.duplicated()].head()
 df1 = df0.drop_duplicates(keep='first')
 
-# Display first few rows of new dataframe as needed
+# Displays first few rows of new dataframe as needed
 df1.head()
 plt.figure(figsize=(6,6))
 plt.title('Boxplot to detect outliers for tenure', fontsize=12)
@@ -58,43 +56,42 @@ sns.boxplot(x=df1['tenure'])
 plt.show()
 percentile25 = df1['tenure'].quantile(0.25)
 
-# Compute the 75th percentile value in `tenure`
+# Computes the 75th percentile value in `tenure`
 percentile75 = df1['tenure'].quantile(0.75)
 
-# Compute the interquartile range in `tenure`
+# Computes the interquartile range in `tenure`
 iqr = percentile75 - percentile25
 
-# Define the upper limit and lower limit for non-outlier values in `tenure`
+# Defines the upper limit and lower limit for non-outlier values in `tenure`
 upper_limit = percentile75 + 1.5 * iqr
 lower_limit = percentile25 - 1.5 * iqr
 print("Lower limit:", lower_limit)
 print("Upper limit:", upper_limit)
 
-# Identify subset of data containing outliers in `tenure`
+# Identifies subset of data containing outliers in `tenure`
 outliers = df1[(df1['tenure'] > upper_limit) | (df1['tenure'] < lower_limit)]
 
-# Count how many rows in the data contain outliers in `tenure`
+# Counts how many rows in the data contain outliers in `tenure`
 print("Number of rows in the data containing outliers in `tenure`:", len(outliers))
 print(df1['left'].value_counts())
 print()
 
-# Get percentages of people who left vs. stayed
-### YOUR CODE HERE ###
+# Gets percentages of people who left vs. stayed
 print(df1['left'].value_counts(normalize=True))
 fig, ax = plt.subplots(1, 2, figsize = (22,8))
 
-# Create boxplot showing `average_monthly_hours` distributions for `number_project`, comparing employees who stayed versus those who left
+# Creates boxplot showing `average_monthly_hours` distributions for `number_project`, comparing employees who stayed versus those who left
 sns.boxplot(data=df1, x='average_monthly_hours', y='number_project', hue='left', orient="h", ax=ax[0])
 ax[0].invert_yaxis()
 ax[0].set_title('Monthly hours by number of projects', fontsize='14')
 
-# Create histogram showing distribution of `number_project`, comparing employees who stayed versus those who left
+# Creates histogram showing distribution of `number_project`, comparing employees who stayed versus those who left
 tenure_stay = df1[df1['left']==0]['number_project']
 tenure_left = df1[df1['left']==1]['number_project']
 sns.histplot(data=df1, x='number_project', hue='left', multiple='dodge', shrink=2, ax=ax[1])
 ax[1].set_title('Number of projects histogram', fontsize='14')
 
-# Display the plots
+# Displays the plots
 plt.show()
 df1[df1['number_project']==7]['left'].value_counts()
 plt.figure(figsize=(16, 9))
@@ -104,12 +101,12 @@ plt.legend(labels=['166.67 hrs./mo.', 'left', 'stayed'])
 plt.title('Monthly hours by last evaluation score', fontsize='14');
 fig, ax = plt.subplots(1, 2, figsize = (22,8))
 
-# Create boxplot showing distributions of `satisfaction_level` by tenure, comparing employees who stayed versus those who left
+# Creates boxplot showing distributions of `satisfaction_level` by tenure, comparing employees who stayed versus those who left
 sns.boxplot(data=df1, x='satisfaction_level', y='tenure', hue='left', orient="h", ax=ax[0])
 ax[0].invert_yaxis()
 ax[0].set_title('Satisfaction by tenure', fontsize='14')
 
-# Create histogram showing distribution of `tenure`, comparing employees who stayed versus those who left
+# Creates histogram showing distribution of `tenure`, comparing employees who stayed versus those who left
 tenure_stay = df1[df1['left']==0]['tenure']
 tenure_left = df1[df1['left']==1]['tenure']
 sns.histplot(data=df1, x='tenure', hue='left', multiple='dodge', shrink=5, ax=ax[1])
@@ -119,18 +116,18 @@ plt.show();
 df1.groupby(['left'])['satisfaction_level'].agg([np.mean,np.median])
 fig, ax = plt.subplots(1, 2, figsize = (22,8))
 
-# Define short-tenured employees
+# Defines short-tenured employees
 tenure_short = df1[df1['tenure'] < 7]
 
-# Define long-tenured employees
+# Defines long-tenured employees
 tenure_long = df1[df1['tenure'] > 6]
 
-# Plot short-tenured histogram
+# Plots short-tenured histogram
 sns.histplot(data=tenure_short, x='tenure', hue='salary', discrete=1, 
              hue_order=['low', 'medium', 'high'], multiple='dodge', shrink=.5, ax=ax[0])
 ax[0].set_title('Salary histogram by tenure: short-tenured people', fontsize='14')
 
-# Plot long-tenured histogram
+# Plots long-tenured histogram
 sns.histplot(data=tenure_long, x='tenure', hue='salary', discrete=1, 
              hue_order=['low', 'medium', 'high'], multiple='dodge', shrink=.4, ax=ax[1])
 ax[1].set_title('Salary histogram by tenure: long-tenured people', fontsize='14');
@@ -155,19 +152,19 @@ heatmap = sns.heatmap(df0.corr(), vmin=-1, vmax=1, annot=True, cmap=sns.color_pa
 heatmap.set_title('Correlation Heatmap', fontdict={'fontsize':14}, pad=12);
 df_enc = df1.copy()
 
-# Encode the `salary` column as an ordinal numeric category
+# Encodes the `salary` column as an ordinal numeric category
 df_enc['salary'] = (
     df_enc['salary'].astype('category')
     .cat.set_categories(['low', 'medium', 'high'])
     .cat.codes
 )
 
-# Dummy encode the `department` column
+# Dummy encodes the `department` column
 df_enc = pd.get_dummies(df_enc, drop_first=False)
 
-# Display the new dataframe
+# Displays the new dataframe
 df_enc.head()
-# Create a heatmap to visualize how correlated variables are
+# Creates a heatmap to visualize how correlated variables are
 plt.figure(figsize=(8, 6))
 sns.heatmap(df_enc[['satisfaction_level', 'last_evaluation', 'number_project', 'average_monthly_hours', 'tenure']]
             .corr(), annot=True, cmap="crest")
@@ -180,60 +177,60 @@ plt.xlabel('Department')
 plt.show()
 df_logreg = df_enc[(df_enc['tenure'] >= lower_limit) & (df_enc['tenure'] <= upper_limit)]
 
-# Display first few rows of new dataframe
+# Displays first few rows of new dataframe
 df_logreg.head()
 y = df_logreg['left']
 
-# Display first few rows of the outcome variable
+# Displays first few rows of the outcome variable
 y.head() 
 X = df_logreg.drop('left', axis=1)
 
-# Display the first few rows of the selected features 
+# Displays the first few rows of the selected features 
 X.head()
-# Split the data into training set and testing set
+# Splits the data into training set and testing set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=42)
 log_clf = LogisticRegression(random_state=42, max_iter=500).fit(X_train, y_train)
 y_pred = log_clf.predict(X_test)
-# Compute values for confusion matrix
+# Computes values for confusion matrix
 log_cm = confusion_matrix(y_test, y_pred, labels=log_clf.classes_)
 
-# Create display of confusion matrix
+# Creates display of confusion matrix
 log_disp = ConfusionMatrixDisplay(confusion_matrix=log_cm, 
                                   display_labels=log_clf.classes_)
 
-# Plot confusion matrix
+# Plots confusion matrix
 log_disp.plot(values_format='')
 
-# Display plot
+# Displays plot
 plt.show()
 df_logreg['left'].value_counts(normalize=True)
-# Create classification report for logistic regression model
+# Creates classification report for logistic regression model
 target_names = ['Predicted would not leave', 'Predicted would leave']
 print(classification_report(y_test, y_pred, target_names=target_names))
-# Isolate the outcome variable
+# Isolates the outcome variable
 y = df_enc['left']
 
-# Display the first few rows of `y`
+# Displays the first few rows of `y`
 y.head()
-# Select the features
+# Selects the features
 X = df_enc.drop('left', axis=1)
 
-# Display the first few rows of `X`
+# Displays the first few rows of `X`
 X.head()
-# Split the data
+# Splits the data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=0)
 tree = DecisionTreeClassifier(random_state=0)
 
-# Assign a dictionary of hyperparameters to search over
+# Assigns a dictionary of hyperparameters to search over
 cv_params = {'max_depth':[4, 6, 8, None],
              'min_samples_leaf': [2, 5, 1],
              'min_samples_split': [2, 4, 6]
              }
 
-# Assign a dictionary of scoring metrics to capture
+# Assigns a dictionary of scoring metrics to capture
 scoring = {'accuracy', 'precision', 'recall', 'f1', 'roc_auc'}
 
-# Instantiate GridSearch
+# GridSearch instantiation
 tree1 = GridSearchCV(tree, cv_params, scoring=scoring, cv=4, refit='roc_auc')
 %%time
 tree1.fit(X_train, y_train)
@@ -250,7 +247,7 @@ def make_results(model_name:str, model_object, metric:str):
     for the model with the best mean 'metric' score across all validation folds.  
     '''
 
-    # Create dictionary that maps input metric to actual metric name in GridSearchCV
+    # Creates dictionary that maps input metric to actual metric name in GridSearchCV
     metric_dict = {'auc': 'mean_test_roc_auc',
                    'precision': 'mean_test_precision',
                    'recall': 'mean_test_recall',
@@ -258,20 +255,20 @@ def make_results(model_name:str, model_object, metric:str):
                    'accuracy': 'mean_test_accuracy'
                   }
 
-    # Get all the results from the CV and put them in a df
+    # Gets all the results from the CV and put them in a df
     cv_results = pd.DataFrame(model_object.cv_results_)
 
-    # Isolate the row of the df with the max(metric) score
+    # Isolates the row of the df with the max(metric) score
     best_estimator_results = cv_results.iloc[cv_results[metric_dict[metric]].idxmax(), :]
 
-    # Extract Accuracy, precision, recall, and f1 score from that row
+    # Extracts Accuracy, precision, recall, and f1 score from that row
     auc = best_estimator_results.mean_test_roc_auc
     f1 = best_estimator_results.mean_test_f1
     recall = best_estimator_results.mean_test_recall
     precision = best_estimator_results.mean_test_precision
     accuracy = best_estimator_results.mean_test_accuracy
   
-    # Create table of results
+    # Creates table of results
     table = pd.DataFrame()
     table = pd.DataFrame({'model': [model_name],
                           'precision': [precision],
@@ -282,13 +279,13 @@ def make_results(model_name:str, model_object, metric:str):
                         })
   
     return table
-# Get all CV scores
+# Gets all CV scores
 tree1_cv_results = make_results('decision tree cv', tree1, 'auc')
 tree1_cv_results
-# Instantiate model
+# Model instantiation
 rf = RandomForestClassifier(random_state=0)
 
-# Assign a dictionary of hyperparameters to search over
+# Assigns a dictionary of hyperparameters to search over
 cv_params = {'max_depth': [3,5, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
@@ -297,10 +294,10 @@ cv_params = {'max_depth': [3,5, None],
              'n_estimators': [300, 500],
              }  
 
-# Assign a dictionary of scoring metrics to capture
+# Assigns a dictionary of scoring metrics to capture
 scoring = {'accuracy', 'precision', 'recall', 'f1', 'roc_auc'}
 
-# Instantiate GridSearch
+# Gridsearch instantiation
 rf1 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc')
 %%time
 rf1.fit(X_train, y_train) # --> Wall time: ~10min
@@ -330,15 +327,15 @@ def read_pickle(path, saved_model_name:str):
         model = pickle.load(to_read)
 
     return model
-# Write pickle
+# Writes pickle
 write_pickle(path, rf1, 'hr_rf1')
-# Read pickle
+# Reads pickle
 rf1 = read_pickle(path, 'hr_rf1')
-# Check best AUC score on CV
+# Checks best AUC score on CV
 rf1.best_score_
-# Check best params
+# Checks best params
 rf1.best_params_
-# Get all CV scores
+# Gets all CV scores
 rf1_cv_results = make_results('random forest cv', rf1, 'auc')
 print(tree1_cv_results)
 print(rf1_cv_results)
@@ -372,65 +369,65 @@ def get_scores(model_name:str, model, X_test_data, y_test_data):
                          })
   
     return table
-# Get predictions on test data
+# Gets predictions on test data
 rf1_test_scores = get_scores('random forest1 test', rf1, X_test, y_test)
 rf1_test_scores
-# Drop `satisfaction_level` and save resulting dataframe in new variable
+# Drops `satisfaction_level` and save resulting dataframe in new variable
 df2 = df_enc.drop('satisfaction_level', axis=1)
 
-# Display first few rows of new dataframe
+# Displays first few rows of new dataframe
 df2.head()
-# Create `overworked` column. For now, it's identical to average monthly hours.
+# Creates `overworked` column. For now, it's identical to average monthly hours.
 df2['overworked'] = df2['average_monthly_hours']
 
-# Inspect max and min average monthly hours values
+# Inspects max and min average monthly hours values
 print('Max hours:', df2['overworked'].max())
 print('Min hours:', df2['overworked'].min())
-# Define `overworked` as working > 175 hrs/week
+# Defines `overworked` as working > 175 hrs/week
 df2['overworked'] = (df2['overworked'] > 175).astype(int)
 
-# Display first few rows of new column
+# Displays first few rows of new column
 df2['overworked'].head()
-# Drop the `average_monthly_hours` column
+# Drops the `average_monthly_hours` column
 df2 = df2.drop('average_monthly_hours', axis=1)
 
-# Display first few rows of resulting dataframe
+# Displays first few rows of resulting dataframe
 df2.head()
-# Isolate the outcome variable
+# Isolates the outcome variable
 y = df2['left']
 
-# Select the features
+# Selects the features
 X = df2.drop('left', axis=1)
-# Create test data
+# Creates test data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=0)
-# Instantiate model
+# Instantiates model
 tree = DecisionTreeClassifier(random_state=0)
 
-# Assign a dictionary of hyperparameters to search over
+# Assigns a dictionary of hyperparameters to search over
 cv_params = {'max_depth':[4, 6, 8, None],
              'min_samples_leaf': [2, 5, 1],
              'min_samples_split': [2, 4, 6]
              }
 
-# Assign a dictionary of scoring metrics to capture
+# Assigns a dictionary of scoring metrics to capture
 scoring = {'accuracy', 'precision', 'recall', 'f1', 'roc_auc'}
 
-# Instantiate GridSearch
+# Gridsearch instantiation
 tree2 = GridSearchCV(tree, cv_params, scoring=scoring, cv=4, refit='roc_auc')
 %%time
 tree2.fit(X_train, y_train)
-# Check best params
+# Checks best params
 tree2.best_params_
-# Check best AUC score on CV
+# Checks best AUC score on CV
 tree2.best_score_
-# Get all CV scores
+# Gets all CV scores
 tree2_cv_results = make_results('decision tree2 cv', tree2, 'auc')
 print(tree1_cv_results)
 print(tree2_cv_results)
-# Instantiate model
+# Model instantiation
 rf = RandomForestClassifier(random_state=0)
 
-# Assign a dictionary of hyperparameters to search over
+# Assigns a dictionary of hyperparameters to search over
 cv_params = {'max_depth': [3,5, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
@@ -439,37 +436,37 @@ cv_params = {'max_depth': [3,5, None],
              'n_estimators': [300, 500],
              }  
 
-# Assign a dictionary of scoring metrics to capture
+# Assigns a dictionary of scoring metrics to capture
 scoring = {'accuracy', 'precision', 'recall', 'f1', 'roc_auc'}
 
-# Instantiate GridSearch
+# Instantiates GridSearch
 rf2 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc')
 %%time
 rf2.fit(X_train, y_train) # --> Wall time: 7min 5s
-# Write pickle
+# Writes pickle
 write_pickle(path, rf2, 'hr_rf2')
-# Read in pickle
+# Reads in pickle
 rf2 = read_pickle(path, 'hr_rf2')
-# Check best params
+# Checks best params
 rf2.best_params_
-# Check best AUC score on CV
+# Checks best AUC score on CV
 rf2.best_score_
-# Get all CV scores
+# Gets all CV scores
 rf2_cv_results = make_results('random forest2 cv', rf2, 'auc')
 print(tree2_cv_results)
 print(rf2_cv_results)
-# Get predictions on test data
+# Gets predictions on test data
 rf2_test_scores = get_scores('random forest2 test', rf2, X_test, y_test)
 rf2_test_scores
-# Generate array of values for confusion matrix
+# Generates array of values for confusion matrix
 preds = rf2.best_estimator_.predict(X_test)
 cm = confusion_matrix(y_test, preds, labels=rf2.classes_)
 
-# Plot confusion matrix
+# Plots confusion matrix
 disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                              display_labels=rf2.classes_)
 disp.plot(values_format='');
-# Plot the tree
+# Plots the tree
 plt.figure(figsize=(85,20))
 plot_tree(tree2.best_estimator_, max_depth=6, fontsize=14, feature_names=X.columns, 
           class_names={0:'stayed', 1:'left'}, filled=True);
@@ -481,7 +478,7 @@ tree2_importances = pd.DataFrame(tree2.best_estimator_.feature_importances_,
                                 )
 tree2_importances = tree2_importances.sort_values(by='gini_importance', ascending=False)
 
-# Only extract the features with importances > 0
+# Only extracts the features with importances > 0
 tree2_importances = tree2_importances[tree2_importances['gini_importance'] != 0]
 tree2_importances
 sns.barplot(data=tree2_importances, x="gini_importance", y=tree2_importances.index, orient='h')
@@ -489,16 +486,16 @@ plt.title("Decision Tree: Feature Importances for Employee Leaving", fontsize=12
 plt.ylabel("Feature")
 plt.xlabel("Importance")
 plt.show()
-# Get feature importances
+# Gets feature importances
 feat_impt = rf2.best_estimator_.feature_importances_
 
-# Get indices of top 10 features
+# Gets indices of top 10 features
 ind = np.argpartition(rf2.best_estimator_.feature_importances_, -10)[-10:]
 
-# Get column labels of top 10 features 
+# Gets column labels of top 10 features 
 feat = X.columns[ind]
 
-# Filter `feat_impt` to consist of top 10 feature importances
+# Filters `feat_impt` to consist of top 10 feature importances
 feat_impt = feat_impt[ind]
 
 y_df = pd.DataFrame({"Feature":feat,"Importance":feat_impt})
